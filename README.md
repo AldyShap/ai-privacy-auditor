@@ -1,16 +1,79 @@
-# React + Vite
+# 🛡️ Consent OS: Empowerment through Privacy Transparency
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Consent OS** — это инновационная платформа для управления цифровой приватностью. Проект решает проблему "нечитаемых" пользовательских соглашений, предоставляя пользователю визуальный контроль и инструменты превентивной защиты данных.
 
-Currently, two official plugins are available:
+## 📋 Содержание
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+  - [Обзор](https://www.google.com/search?q=%23%D0%BE%D0%B1%D0%B7%D0%BE%D1%80)
+  - [Ключевые модули](https://www.google.com/search?q=%23%D0%BA%D0%BB%D1%8E%D1%87%D0%B5%D0%B2%D1%8B%D0%B5-%D0%BC%D0%BE%D0%B4%D1%83%D0%BB%D0%B8)
+  - [Алгоритм скоринга](https://www.google.com/search?q=%23%D0%B0%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC-%D1%81%D0%BA%D0%BE%D1%80%D0%B8%D0%BD%D0%B3%D0%B0)
+  - [Технический стек](https://www.google.com/search?q=%23%D1%82%D0%B5%D1%85%D0%BD%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9-%D1%81%D1%82%D0%B5%D0%BA)
+  - [Установка](https://www.google.com/search?q=%23%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0)
 
-## React Compiler
+-----
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🌟 Обзор
 
-## Expanding the ESLint configuration
+Большинство пользователей подписывают Privacy Policy, не читая их. **Consent OS** агрегирует данные о доступах всех ваших приложений в один Dashboard, анализирует риски с помощью AI и выставляет оценку безопасности вашего цифрового профиля.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🧩 Ключевые модули
+
+### 📊 1. Privacy Dashboard
+
+Центральный хаб, где отображаются все подключенные сервисы (Kaspi, Google, Instagram и т.д.).
+
+  - **Статус доступа:** Время последнего обращения приложения к вашим данным.
+  - **Уровни риска:** Визуальная маркировка (**HIGH**, **MEDIUM**, **LOW**) на основе объема собираемых данных.
+
+### 🔮 2. Privacy Simulator
+
+Инструмент для оценки последствий *до* принятия решения.
+
+  - Пользователь выбирает приложение для установки.
+  - Система прогнозирует изменение **Privacy Score**.
+  - Выделяются критические угрозы (например, фоновый доступ к микрофону).
+
+### ⚙️ 3. Управление и Настройки
+
+  - **One-click Revoke:** Возможность мгновенно отозвать разрешения прямо из интерфейса.
+  - **Smart Notifications:** Оповещения о критических изменениях в политике конфиденциальности сервисов.
+
+## 🧮 Алгоритм скоринга (Privacy Score)
+
+В основе лежит кумулятивная модель оценки рисков. В отличие от простых средних значений, наш алгоритм:
+
+1.  Анализирует критичность каждого разрешения.
+2.  Учитывает количество сервисов с высоким уровнем доступа.
+3.  Рассчитывает индекс от 0 до 100, где \>80 — высокий уровень защиты (**Stable**), а \<60 — критический уровень (**At Risk**).
+
+## 🛠 Технический стек
+
+  - **Ядро:** React.js (Vite)
+  - **Навигация:** React Router DOM (v6)
+  - **Стилизация:** Custom CSS (Modern UI/UX, Glassmorphism elements)
+  - **Логика:** JavaScript (ES6+)
+
+## 🚀 Установка и запуск
+
+1.  **Клонирование:**
+    ```bash
+    git clone https://github.com/your-username/consent-os.git
+    ```
+2.  **Зависимости:**
+    ```bash
+    npm install
+    ```
+3.  **Разработка:**
+    ```bash
+    npm run dev
+    ```
+
+-----
+
+## 🎯 Миссия проекта
+
+Сделать приватность доступной. Мы верим, что каждый пользователь имеет право знать, как используются его данные, не обладая при этом юридическим образованием.
+
+-----
+
+*Created by Venom Team for Hackathon 2026.*
