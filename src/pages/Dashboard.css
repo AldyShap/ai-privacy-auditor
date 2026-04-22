@@ -1,0 +1,84 @@
+.services-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: minmax(130px, 1fr);
+    gap: 10px;
+    margin-bottom: 50px;
+
+}
+
+.service {
+    display: flex;
+    border: none;
+    width: 300px;
+    height: 100px;
+    padding: 10px;
+    gap: 5px;
+    margin-left: 15px;
+    border-radius: 15px;
+    box-shadow: 2px 2px 3px 3px rgba(0, 0, 0, 0.3);
+
+}
+
+.service-card-close {
+    padding: 5px;
+    border-radius: 10px;
+    font-size: 20px;
+    width:60px;
+    margin:5px;
+}
+
+.revoke-btn-mini {
+    background: transparent;
+    color: #ef4444;
+    border: 1px solid #ef4444;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-left: 10px;
+    transition: 0.3s;
+}
+
+.revoke-btn-mini:hover {
+    background: #ef4444;
+    color: white;
+}
+
+.service-main {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+}
+
+.manage-btn {
+    text-align: center;
+    align-content: center;
+    width: 70px;
+    height: 25px;
+    border: 2px solid #2fabff;
+    color: #2fabff;
+    border-radius: 10px;
+    background: none;
+    transition: 0.2s ease;
+}
+
+.manage-btn:hover {
+    transform: scale(1.1);
+}
+
+.connect-count {
+    font-size: 18px;
+    font-family: sans-serif;
+}
+
+.last-access {
+    font-size: 15px;
+    font-family: sans-serif;
+}
+
+.contend {
+    padding: 5px;
+    font-size: 10px;
+}

@@ -1,0 +1,38 @@
+.dataList-container {
+        display: flex;
+        justify-content: space-between; /* 👈 раскидывает по краям */
+        align-items: center; /* по вертикали красиво выравнивает */
+}
+
+.contendOs-logo {
+    width: 250px;
+    height: 70px;
+    position: relative;
+    left: 80px;
+    border-radius: 10px;
+    transition: 0.2s ease;
+}
+.contendOs-logo:hover {
+    transform: scale(1.1);
+}
+
+.profile-contend {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+    font-family: sans-serif;
+}
+
+.profile-contend img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid black;
+    transition: 0.2s ease;
+}
+
+.profile-contend img:hover {
+    transform: scale(1.1);
+}

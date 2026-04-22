@@ -1,0 +1,59 @@
+.gauge-wrapper {
+    text-align: center;
+}
+
+.gauge-chart {
+    position: relative;
+    display: inline-block;
+}
+
+.score-center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -40%);
+    text-align: center;
+}
+
+.score-num {
+    font-size: 48px;
+    font-family: sans-serif;
+    font-weight: 700;
+}
+
+.score-status {
+    font-size: 20px;
+    font-family: sans-serif;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.score-footer h2 {
+    margin-top: 20px;
+    font-size: 20px;
+    font-family: sans-serif;
+}
+
+.score-footer p {
+    color: #64748b;
+    font-size: 15px;
+    font-family: sans-serif;
+}
+
+.needle {
+    position: absolute;
+
+    width: 3px;
+    height: 80px;
+
+    background: black;
+
+    top: 100%;        /* 👈 ВАЖНО: было 50%, теперь 100% */
+    left: 50%;
+
+    transform-origin: bottom center;
+
+    transform: translate(-50%, -100%) rotate(0deg);
+
+    transition: transform 0.8s ease;
+}
