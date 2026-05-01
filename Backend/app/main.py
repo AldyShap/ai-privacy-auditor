@@ -283,8 +283,8 @@ async def google_callback(
         )
 
     try:
-        frontend_url = f"{FRONTEND_URL.rstrip('/')}/auth/google/callback?email={quote(email)}&name={quote(name)}"
-        return RedirectResponse(url=frontend_url, status_code=302)
+        frontend_url = f"{FRONTEND_URL.rstrip('/')}/?email={quote(email)}&name={quote(name)}"        
+        return RedirectResponse(url=frontend_url)
     except Exception as exc:
         detail = str(exc)
         print("Google callback redirect failed:", detail)
