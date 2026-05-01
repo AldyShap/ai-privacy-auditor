@@ -1,16 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Login.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { API_URL } from "../services/config.js";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
+  // --- GOOGLE-ДЕН ҚАЙТҚАН ДЕРЕКТЕРДІ ТЕКСЕРУ ---
+  useEffect(() => {
+    const googleEmail = searchParams.get("email");
+    const googleName = searchParams.get("name");
+    const authStatus = searchParams.get("auth");
+
+    if (authStatus === "success" && googleEmail) {
+      // Бэкендтен келген нақты деректерді сақтаймыз
+      localStorage.setItem("user", JSON.stringify({
+        username: googleName,
+        email: googleEmail
+      }));
+
+      alert("Google арқылы сәтті кірдіңіз!");
+      navigate("/dashboard");
+    }
+
+    const error = searchParams.get("error");
+    if (error) {
+      alert("Авторизация қатесі: " + error);
+    }
+  }, [searchParams, navigate]);
+
+  // --- ҚАЛЫПТЫ LOGIN (EMAIL/PASSWORD) ---
   async function handleLogin(e) {
     e.preventDefault();
-
     try {
       const response = await fetch(`${API_URL}/login`, {
         method: "POST",
@@ -21,20 +45,15 @@ const LoginPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // 1. Пайдаланушы мен токенді сақтау
         localStorage.setItem("token", data.access_token);
         localStorage.setItem("user", JSON.stringify({
-          username: data.user, // Бэкэндтен келген аты
+          username: data.user,
           email: email
         }));
-
         alert("Қош келдіңіз!");
-        
-        // 2. Dashboard-қа өту
-        navigate("/dashboard"); 
-
+        navigate("/dashboard");
       } else {
-        alert(`${data.detail} or password` || "Қате орын алды");
+        alert(`${data.detail}` || "Құпия сөз немесе Email қате");
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -53,6 +72,7 @@ const LoginPage = () => {
           <h1>Қош келдіңіз!</h1>
           <p className="subtitle">Аккаунтыңызға кіріңіз</p>
 
+          {/* GOOGLE БАТЫРМАСЫ - ТІКЕЛЕЙ БЭКЭНДКЕ СІЛТЕМЕ */}
           <a className="google-btn" href={`${API_URL}/auth/login/google`}>
             <img src="https://www.google.com/favicon.ico" alt="G" style={{ width: "18px", marginRight: "10px" }} />
             Google арқылы кіру

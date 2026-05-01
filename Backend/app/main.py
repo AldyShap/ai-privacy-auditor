@@ -221,28 +221,9 @@ async def google_callback(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    try:
-        token = await oauth.google.authorize_access_token(request)
-    except Exception as exc:
-        detail = str(exc)
-        print("Google callback authorize_access_token failed:", detail)
-        return {
-            "error": "Google authorize_access_token failed",
-            "detail": detail,
-            "frontend_url": FRONTEND_URL,
-            "backend_url": BACKEND_URL
-        }
-
-    if not token or "userinfo" not in token:
-        detail = f"Invalid token response: {token}"
-        print(detail)
-        return {
-            "error": "Invalid token response",
-            "detail": detail,
-            "frontend_url": FRONTEND_URL,
-            "backend_url": BACKEND_URL
-        }
-
+    callback_uri = "https://ai-privacy-auditor-1jse.vercel.app/auth/google/callback"
+    
+    token = await oauth.google.authorize_access_token(request, redirect_uri=callback_uri)
     user_info = token["userinfo"]
     email = user_info.get("email")
     name = user_info.get("name", email.split("@")[0] if email else None)
@@ -283,7 +264,7 @@ async def google_callback(
         )
 
     try:
-        frontend_url = f"{FRONTEND_URL.rstrip('/dashboard')}/?email={quote(email)}&name={quote(name)}"        
+        frontend_url = f"https://ai-privacy-auditor.vercel.app/login?email={quote(email)}&name={quote(name)}&auth=success"       
         return RedirectResponse(url=frontend_url)
     except Exception as exc:
         detail = str(exc)
