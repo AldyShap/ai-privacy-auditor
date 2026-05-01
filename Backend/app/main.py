@@ -65,14 +65,20 @@ app.add_middleware(
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-if not DATABASE_URL:
+def _get_sqlite_database_url():
     default_db_path = os.path.join(BASE_DIR, "users.db")
     temp_db_path = os.path.join(tempfile.gettempdir(), "users.db")
 
+    if os.getenv("VERCEL") == "1":
+        return f"sqlite:///{temp_db_path}"
+
     if os.path.isdir(BASE_DIR) and os.access(BASE_DIR, os.W_OK):
-        DATABASE_URL = f"sqlite:///{default_db_path}"
-    else:
-        DATABASE_URL = f"sqlite:///{temp_db_path}"
+        return f"sqlite:///{default_db_path}"
+
+    return f"sqlite:///{temp_db_path}"
+
+if not DATABASE_URL:
+    DATABASE_URL = _get_sqlite_database_url()
 
 engine = create_engine(
     DATABASE_URL,
