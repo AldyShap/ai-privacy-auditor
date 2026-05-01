@@ -188,7 +188,7 @@ oauth.register(
     }
 )
 
-FRONTEND_URL = os.getenv("FRONTEND_URL")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "https://ai-privacy-auditor.vercel.app")
 BACKEND_URL = os.getenv("BACKEND_URL", "https://ai-privacy-auditor.onrender.com")
 print(BACKEND_URL)
 

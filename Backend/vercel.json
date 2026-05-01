@@ -15,5 +15,12 @@
       "src": "/(.*)",
       "dest": "/app/main.py"
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
   ]
+  
 }
