@@ -48,7 +48,7 @@ app.add_middleware(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5174", "http://localhost:5174", "http://localhost:8000", "http://127.0.0.1:8000", "http://localhost:5173", "https://ai-privacy-auditor.onrender.com"],
+    allow_origins=["http://127.0.0.1:5174", "http://localhost:5174", "http://localhost:8000", "http://127.0.0.1:8000", "http://localhost:5173", "https://ai-privacy-auditor.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
