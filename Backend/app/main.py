@@ -4,6 +4,10 @@ from pydantic import BaseModel, EmailStr
 import httpx
 # from google_play_scraper import app as get_app_info
 from google_play_scraper import app as get_app_info, search
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+
+import os
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 from sqlalchemy import (
     create_engine,
@@ -58,6 +62,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
 
 
