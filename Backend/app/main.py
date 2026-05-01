@@ -192,15 +192,41 @@ async def google_callback(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    token = await oauth.google.authorize_access_token(request)
+    try:
+        token = await oauth.google.authorize_access_token(request)
+    except Exception as exc:
+        detail = str(exc)
+        print("Google callback authorize_access_token failed:", detail)
+        return {
+            "error": "Google authorize_access_token failed",
+            "detail": detail,
+            "frontend_url": FRONTEND_URL,
+            "backend_url": BACKEND_URL
+        }
+
+    if not token or "userinfo" not in token:
+        detail = f"Invalid token response: {token}"
+        print(detail)
+        return {
+            "error": "Invalid token response",
+            "detail": detail,
+            "frontend_url": FRONTEND_URL,
+            "backend_url": BACKEND_URL
+        }
 
     user_info = token["userinfo"]
+    email = user_info.get("email")
+    name = user_info.get("name", email.split("@")[0] if email else None)
 
-    email = user_info["email"]
-    name = user_info.get(
-        "name",
-        email.split("@")[0]
-    )
+    if not email:
+        detail = f"Email not found in userinfo: {user_info}"
+        print(detail)
+        return {
+            "error": "Email not found in userinfo",
+            "detail": detail,
+            "frontend_url": FRONTEND_URL,
+            "backend_url": BACKEND_URL
+        }
 
     user = db.query(User).filter(
         User.email == email
@@ -224,11 +250,21 @@ async def google_callback(
     if FRONTEND_URL.rstrip('/') == BACKEND_URL.rstrip('/'):
         raise HTTPException(
             status_code=500,
-            detail="FRONTEND_URL is set to the backend URL. It must point to your frontend URL, not Render backend."
+            detail="FRONTEND_URL is set to the backend URL. It must point to your frontend URL, not backend."
         )
 
-    frontend_url = f"{FRONTEND_URL.rstrip('/')}/auth/google/callback?email={quote(email)}&name={quote(name)}"
-    return RedirectResponse(url=frontend_url, status_code=302)
+    try:
+        frontend_url = f"{FRONTEND_URL.rstrip('/')}/auth/google/callback?email={quote(email)}&name={quote(name)}"
+        return RedirectResponse(url=frontend_url, status_code=302)
+    except Exception as exc:
+        detail = str(exc)
+        print("Google callback redirect failed:", detail)
+        return {
+            "error": "RedirectResponse failed",
+            "detail": detail,
+            "frontend_url": FRONTEND_URL,
+            "backend_url": BACKEND_URL
+        }
 
 
 # ---------------- REGISTER ----------------
