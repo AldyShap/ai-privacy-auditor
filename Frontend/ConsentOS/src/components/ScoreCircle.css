@@ -1,0 +1,43 @@
+.gauge-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gauge-chart {
+  position: relative;
+}
+
+.score-center-text {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.score-num {
+  font-size: 48px;
+  font-weight: bold;
+}
+
+.score-status {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.score-footer {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.score-footer h2 {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.score-footer p {
+  font-size: 14px;
+  color: gray;
+}

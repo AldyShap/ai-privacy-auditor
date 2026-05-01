@@ -1,0 +1,96 @@
+.flow-wrapper {
+  text-align: center;
+  font-family: sans-serif;
+  padding: 60px 20px;
+}
+
+.flow-line {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  margin: 40px 0;
+}
+
+.flow-step {
+  z-index: 2;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  transition: 0.3s ease;
+}
+
+.flow-step:hover {
+    transform: scale(1.2);
+}
+
+.circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+  font-size: 24px;
+  transition: 0.3s;
+}
+
+.flow-step.active .circle {
+  background: #00ffcc;
+  color: #000;
+  transform: scale(1.2);
+}
+
+.flow-line::before {
+  content: "";
+  position: absolute;
+  top: 30px;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: #333;
+  z-index: 1;
+}
+
+.progress {
+  position: absolute;
+  top: 30px;
+  left: 0;
+  height: 4px;
+  background: #00ffcc;
+  z-index: 1;
+  transition: 0.4s ease;
+}
+
+.flow-content {
+  margin-top: 20px;
+  font-size: 18px;
+  opacity: 0.8;
+}
+
+
+.why-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.why-card {
+  padding: 25px;
+  border-radius: 20px;
+  background: rgba(3, 3, 3, 0.05);
+  backdrop-filter: blur(10px);
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.why-card:hover {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}

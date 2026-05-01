@@ -1,0 +1,81 @@
+/* Батырма стилі */
+.menu-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001; /* Sidebar-дан да жоғары тұруы керек */
+    background: hsl(216, 3%, 61%);
+    color: #0a0a0a;
+    border: none;
+    font-size: 24px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+.menu-toggle:hover {
+    transform: scale(1.1);
+}
+/* Sidebar негізгі стилі */
+.sidebar {
+    position: fixed;
+    border-radius: 10px;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    background: #ffffff; /* Қараңғы фон */
+    color: white;
+    z-index: 1000;
+    transform: translateX(-100%); /* Бастапқыда жасыру */
+    transition: transform 0.3s ease-in-out; /* Бірқалыпты ашылу */
+    padding-top: 80px;
+}
+
+.sidebar.open {
+    transform: translateX(0); /* Ашылғанда экранға шығару */
+}
+
+/* Overlay - экранның қалған бөлігін жабу */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+}
+
+.nav-links {
+    list-style: none;
+    padding: 20px;
+}
+
+.nav-links li {
+    margin: 20px 0;
+}
+
+.nav-links a {
+    color: #121313;
+    text-decoration: none;
+    font-size: 20px;
+    font-family: sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-links a:hover {
+    color: #2fabff;
+}
+
+
+.sidebar-logo img {
+    padding-top: 20px;
+    padding-left: 10px;
+    width: 250px;
+    height: 70px;
+    border-radius: 10px;
+}

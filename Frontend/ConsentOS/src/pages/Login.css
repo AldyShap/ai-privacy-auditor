@@ -1,0 +1,87 @@
+/* Бұрынғы стильдерге қосымша: */
+
+.login-card {
+  max-width: 850px;
+}
+
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.forgot-link {
+  font-size: 12px;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.footer-text {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+.link {
+  color: #007bff;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+/* Оң жақ бөлімді безендіру */
+.welcome-back {
+  background: linear-gradient(135deg, #007bff 0%, #00d4ff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+}
+
+.welcome-content h2 {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.welcome-content p {
+  font-size: 14px;
+  opacity: 0.9;
+  line-height: 1.6;
+}
+
+/* Google батырмасының стилі */
+.google-btn {
+  width: 100%;
+  padding: 12px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.google-btn:hover {
+  background: #284f82;
+}
+
+.divider {
+  text-align: center;
+  margin: 20px 0;
+  color: #aaa;
+  position: relative;
+}
+
+.contendOs-logo {
+    width: 250px;
+    height: 70px;
+    position: relative;
+    left: 80px;
+    border-radius: 10px;
+    transition: 0.2s ease;
+}

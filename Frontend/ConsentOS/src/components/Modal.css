@@ -1,0 +1,224 @@
+/* Сыртқы қараңғы фон */
+.service-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    justify-content: flex-end;
+    align-items: stretch;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+/* Оң жақтан шығатын панель */
+.service-modal-content {
+    background: #ffffff;
+    width: min(420px, 100%);
+    max-width: 420px;
+    height: 100vh;
+    padding: 26px 24px;
+    border-radius: 40px 0 0 40px;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    overflow-y: auto;
+    position: relative;
+    box-sizing: border-box;
+    animation: slideIn 0.28s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+.service-close-row {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.service-card-close {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #0f172a;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+.service-card-close:hover {
+    background: #e2efff;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.modal-logo {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    object-fit: cover;
+    background: #f8fafc;
+    border: 1px solid #eef2ff;
+}
+
+.modal-header-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.modal-header-info h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.modal-header-info p {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.risk-badge {
+    margin-left: auto;
+    padding: 8px 15px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    color: white;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.ai-explain-box {
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+    padding: 18px;
+    border-radius: 22px;
+}
+
+.ai-explain-box h4 {
+    margin: 0 0 10px;
+    color: #1e293b;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ai-explain-box p {
+    margin: 0;
+    color: #475569;
+    line-height: 1.7;
+    font-size: 14px;
+}
+
+.permissions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.permissions-list h4 {
+    margin: 0 0 8px;
+    font-size: 15px;
+    color: #1f2937;
+}
+
+.perm-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    color: #334155;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.perm-status-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #16a34a;
+    color: white;
+    font-size: 14px;
+}
+
+.ai-analysis-result {
+    padding: 18px;
+    border-radius: 20px;
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px dashed rgba(59, 130, 246, 0.3);
+    color: #0f172a;
+    font-size: 14px;
+    line-height: 1.7;
+    gap: 10px;
+}
+
+.ai-analysis-result h4 {
+    margin: 0 0 10px;
+    color: #1d4ed8;
+    font-size: 15px;
+}
+
+.button-group {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 18px;
+    flex-shrink: 0;
+}
+
+.revoke-btn, .explain-btn {
+    width: 100%;
+    min-height: 54px;
+    border-radius: 16px;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.revoke-btn {
+    background: #dc2626;
+    color: white;
+}
+
+.revoke-btn:hover {
+    background: #b91c1c;
+    transform: translateY(-1px);
+}
+
+.explain-btn {
+    background: #0284c7;
+    color: white;
+}
+
+.explain-btn:hover {
+    background: #0369a1;
+    transform: translateY(-1px);
+}

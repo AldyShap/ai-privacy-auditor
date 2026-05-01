@@ -1,0 +1,114 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f4f4f9;
+  font-family: sans-serif;
+}
+
+.logo {
+    position: relative;
+    right: 100px;
+}
+
+.contendOS-logo {
+    width: 170px;
+    height: 50px;
+    position: relative;
+    left: 80px;
+    border-radius: 10px;
+    transition: 0.2s ease;
+}
+
+.form-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-section button {
+    margin-top: 20px;
+    background-color: #007bff;
+    color: white;
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+}
+.form-section button:active {
+    transform: scale(0.9);
+}
+
+.registration-card {
+  display: flex;
+  background: white;
+  width: 900px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.form-section, .info-section {
+  padding: 40px;
+  width: 50%;
+}
+
+.info-section {
+  background-color: #ffffff;
+}
+
+
+/* Форма стильдері */
+input {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 15px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Ақпараттық панель стильдері */
+.score-card {
+  text-align: center;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+}
+
+.score {
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  border-left: 5px solid #ddd;
+}
+
+.subtitle {
+    margin-top: 0;
+    font-size: 13px;
+    color: hsl(0, 0%, 50%);
+    text-align: center;
+}
+/* Түсті карточкалар */
+.blue { border-left-color: #007bff; }
+.orange { border-left-color: #ff9800; }
+.green { border-left-color: #4caf50; }
