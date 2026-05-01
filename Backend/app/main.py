@@ -65,6 +65,13 @@ app.add_middleware(
 
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
+app.add_middleware(
+    SessionMiddleware,
+    secret_key="supersecret123",
+    same_site="none",
+    https_only=True
+)
+
 
 
 # ---------------- DATABASE ----------------
@@ -195,18 +202,17 @@ oauth.register(
 )
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "https://ai-privacy-auditor.vercel.app")
-BACKEND_URL = os.getenv("BACKEND_URL", "https://ai-privacy-auditor.onrender.com")
+BACKEND_URL = os.getenv("BACKEND_URL", "https://ai-privacy-auditor-1jse.vercel.app")
 print(BACKEND_URL)
 
 
 @app.get("/auth/login/google")
 async def google_login(request: Request):
-    callback_uri = "https://ai-privacy-auditor-1jse.vercel.app/auth/google/callback"
     redirect_uri = request.url_for("google_callback")
 
     return await oauth.google.authorize_redirect(
         request,
-        callback_uri
+        redirect_uri
     )
 
 
@@ -215,9 +221,8 @@ async def google_callback(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    callback_uri = "https://ai-privacy-auditor-1jse.vercel.app/auth/google/callback"    
     try:
-        token = await oauth.google.authorize_access_token(request, redirect_url=callback_uri)
+        token = await oauth.google.authorize_access_token(request)
     except Exception as exc:
         detail = str(exc)
         print("Google callback authorize_access_token failed:", detail)
