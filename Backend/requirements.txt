@@ -9,3 +9,4 @@ authlib==1.2.1
 python-dotenv==1.0.0
 httpx==0.25.2
 google-play-scraper==1.2.6
+itsdangerous==2.1.2
