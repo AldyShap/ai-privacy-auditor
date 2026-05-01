@@ -283,7 +283,7 @@ async def google_callback(
         )
 
     try:
-        frontend_url = f"{FRONTEND_URL.rstrip('/')}/?email={quote(email)}&name={quote(name)}"        
+        frontend_url = f"{FRONTEND_URL.rstrip('/dashboard')}/?email={quote(email)}&name={quote(name)}"        
         return RedirectResponse(url=frontend_url)
     except Exception as exc:
         detail = str(exc)

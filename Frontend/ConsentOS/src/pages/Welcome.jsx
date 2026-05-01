@@ -1,9 +1,23 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import "./Welcome.css";
 
 const Welcome = () => {
     const navigate = useNavigate();
+
+    const [searchParams] = useSearchParams();
+
+    useEffect(() => {
+        const email = searchParams.get("email");
+        const name = searchParams.get("name");
+
+        if (email && name) {
+            localStorage.setItem("user", JSON.stringify({ username: name, email: email }));
+            // Деректерді сақтап болған соң, Dashboard-қа автоматты түрде өтеміз
+            navigate("/dashboard");
+        }
+    }, [searchParams, navigate]);
 
     return (
         <div className="welcome-wrapper" >
