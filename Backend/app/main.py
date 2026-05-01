@@ -264,7 +264,7 @@ async def google_callback(
         )
 
     try:
-        frontend_url = f"https://ai-privacy-auditor.vercel.app/login?email={quote(email)}&name={quote(name)}&auth=success"       
+        frontend_url = f"https://ai-privacy-auditor.vercel.app/login?email={quote(email)}&name={quote(name)}&auth=success"
         return RedirectResponse(url=frontend_url)
     except Exception as exc:
         detail = str(exc)
