@@ -1,8 +1,13 @@
 {
+  "version": 2,
   "rewrites": [
     {
+      "source": "/auth/google/callback",
+      "destination": "/index.html"
+    },
+    {
       "source": "/(.*)",
-      "destination": "/"
+      "destination": "/index.html"
     }
   ]
 }
