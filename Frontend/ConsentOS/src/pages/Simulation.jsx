@@ -115,7 +115,7 @@
     setLoading(true);
     try {
         // query параметрінің атын бэкендтегідей 'name' деп өзгерттік
-        const response = await fetch(`http://localhost:8000/api/analyze-app?name=${encodeURIComponent(trimmed)}`);
+        const response = await fetch(`https://ai-privacy-auditor.onrender.com/api/analyze-app?name=${encodeURIComponent(trimmed)}`);
         
         if (!response.ok) {
             throw new Error("Сервис талдау кезінде қате кетті");

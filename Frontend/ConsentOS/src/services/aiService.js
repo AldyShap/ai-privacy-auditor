@@ -1,6 +1,6 @@
 export const getAIExplanation = async (serviceName, permissions) => {
     try {
-        const response = await fetch("http://127.0.0.1:8000/api/analyze-privacy", {
+        const response = await fetch("https://ai-privacy-auditor.onrender.com/api/analyze-privacy", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
