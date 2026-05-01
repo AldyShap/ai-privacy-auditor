@@ -201,11 +201,12 @@ print(BACKEND_URL)
 
 @app.get("/auth/login/google")
 async def google_login(request: Request):
+    callback_uri = "https://ai-privacy-auditor-1jse.vercel.app/auth/google/callback"
     redirect_uri = request.url_for("google_callback")
 
     return await oauth.google.authorize_redirect(
         request,
-        redirect_uri
+        callback_uri
     )
 
 
@@ -214,8 +215,9 @@ async def google_callback(
     request: Request,
     db: Session = Depends(get_db)
 ):
+    callback_uri = "https://ai-privacy-auditor-1jse.vercel.app/auth/google/callback"    
     try:
-        token = await oauth.google.authorize_access_token(request)
+        token = await oauth.google.authorize_access_token(request, redirect_url=callback_uri)
     except Exception as exc:
         detail = str(exc)
         print("Google callback authorize_access_token failed:", detail)
