@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Regestration.css';
+import { API_URL } from '../services/config.js';
 
 
 const RegistrationPage = () => {
@@ -8,7 +9,6 @@ const RegistrationPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const API_URL = import.meta.env.VITE_API_URL || "https://ai-privacy-auditor.onrender.com";
 
   async function handleSubmit(e) {
     e.preventDefault();

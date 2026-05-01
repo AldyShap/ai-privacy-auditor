@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
-// import.meta.env.VITE_API_URL || 
+import { API_URL } from "../services/config.js";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const API_URL = "https://ai-privacy-auditor.onrender.com";
 
   async function handleLogin(e) {
     e.preventDefault();

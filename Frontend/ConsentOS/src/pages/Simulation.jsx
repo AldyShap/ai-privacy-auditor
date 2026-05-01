@@ -3,6 +3,7 @@
   import { mockServices } from '../data/mockData'; // Бастапқы деректер
   import ScoreCircle from '../components/ScoreCircle';
   import { getAIExplanation } from '../services/aiService.js';
+  import { API_URL } from '../services/config.js';
   import "./Simulation.css";
 
   const APPS_DATA = [
@@ -115,7 +116,7 @@
     setLoading(true);
     try {
         // query параметрінің атын бэкендтегідей 'name' деп өзгерттік
-        const response = await fetch(`https://ai-privacy-auditor.onrender.com/api/analyze-app?name=${encodeURIComponent(trimmed)}`);
+        const response = await fetch(`${API_URL}/api/analyze-app?name=${encodeURIComponent(trimmed)}`);
         
         if (!response.ok) {
             throw new Error("Сервис талдау кезінде қате кетті");
@@ -177,7 +178,7 @@
                 <button type="button" onClick={handleSearch} style={{border: "2px solid skyblue", fontSize: 20, padding: 5, borderRadius: 10}}>{loading ? "..." : "🔍"}</button>
               {/* <button type="button" onClick={async () => {
                 try {
-                  const response = await fetch('http://localhost:8000/api/test');
+                  const response = await fetch(`${API_URL}/api/test`);
                   const data = await response.json();
                   alert('Backend connection successful: ' + JSON.stringify(data));
                 } catch (error) {
