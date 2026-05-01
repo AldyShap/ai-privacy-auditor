@@ -5,8 +5,6 @@ import httpx
 # from google_play_scraper import app as get_app_info
 from google_play_scraper import app as get_app_info, search
 
-import serpapi
-
 from sqlalchemy import (
     create_engine,
     Column,
