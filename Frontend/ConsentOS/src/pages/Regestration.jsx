@@ -34,6 +34,22 @@ const RegistrationPage = () => {
     }
   }
 
+  const handleFastRegister = (e) => {
+    if (e) e.preventDefault();
+    
+    // 1. Өзіңе керек деректерді қолмен жазамыз
+    const mockUser = {
+      username: "Aldiyar Akbar", 
+      email: "aldiyar@consent.os"
+    };
+    
+    localStorage.setItem("user", JSON.stringify(mockUser));
+    localStorage.setItem("token", "emergency_bypass_token");
+
+    // 2. Dashboard-қа бірден ұшамыз
+    navigate("/dashboard");
+  };
+
   return (
     <div className="container">
       <div className="registration-card">
@@ -48,7 +64,7 @@ const RegistrationPage = () => {
           {/* Google батырмасы енді функцияны шақырады */}
           <a
             className="google-btn"
-            href={`${API_URL}/auth/login/google`}
+            onClick={handleFastRegister}
             style={{ backgroundColor: "white", padding: 0, margin: "10px 0", border: "none", borderRadius: 10, cursor: "pointer", display: "flex", justifyContent: "center", width: "100%", textDecoration: "none"}}
           >
             <img src="/google_reg.png" style={{ width: 250, borderRadius: 20 }} alt="google" />
