@@ -172,7 +172,9 @@ oauth.register(
     }
 )
 
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+FRONTEND_URL = os.getenv("FRONTEND_URL")
+BACKEND_URL = os.getenv("BACKEND_URL", "https://ai-privacy-auditor.onrender.com")
+print(BACKEND_URL)
 
 
 @app.get("/auth/login/google")
@@ -213,7 +215,19 @@ async def google_callback(
         db.add(user)
         db.commit()
 
-    frontend_url = f"{FRONTEND_URL}/auth/google/callback?email={quote(email)}&name={quote(name)}"
+    if not FRONTEND_URL:
+        raise HTTPException(
+            status_code=500,
+            detail="FRONTEND_URL environment variable is not set on the backend. Set it to your frontend URL."
+        )
+
+    if FRONTEND_URL.rstrip('/') == BACKEND_URL.rstrip('/'):
+        raise HTTPException(
+            status_code=500,
+            detail="FRONTEND_URL is set to the backend URL. It must point to your frontend URL, not Render backend."
+        )
+
+    frontend_url = f"{FRONTEND_URL.rstrip('/')}/auth/google/callback?email={quote(email)}&name={quote(name)}"
     return RedirectResponse(url=frontend_url, status_code=302)
 
 
