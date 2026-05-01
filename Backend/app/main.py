@@ -29,6 +29,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from urllib.parse import quote
 import os
+import tempfile
 
 BASE_DIR = os.path.dirname(__file__)
 load_dotenv(os.path.join(BASE_DIR, ".env"))
@@ -62,7 +63,16 @@ app.add_middleware(
 
 # ---------------- DATABASE ----------------
 
-DATABASE_URL = "sqlite:///./users.db"
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    default_db_path = os.path.join(BASE_DIR, "users.db")
+    temp_db_path = os.path.join(tempfile.gettempdir(), "users.db")
+
+    if os.path.isdir(BASE_DIR) and os.access(BASE_DIR, os.W_OK):
+        DATABASE_URL = f"sqlite:///{default_db_path}"
+    else:
+        DATABASE_URL = f"sqlite:///{temp_db_path}"
 
 engine = create_engine(
     DATABASE_URL,
