@@ -47,13 +47,11 @@ function App() {
             }/>
             <Route path="/signup" element={
               <div>
-              <Navbar />
               <RegistrationPage />
             </div>
             }></Route>
             <Route path="/login" element={
               <div>
-              <Navbar />
               <LoginPage />
             </div>
             }></Route>
