@@ -30,7 +30,7 @@ function AiChat() {
 
     try {
         // GET сұранысы: параметрді URL-ге қосамыз
-        const response = await fetch(`https://ai-privacy-auditor.onrender.com/api/ai-chat?question=${encodeURIComponent(currentInput)}`);
+        const response = await fetch(`${API_URL}/api/ai-chat?question=${encodeURIComponent(currentInput)}`);
         
         if (!response.ok) throw new Error("Сервер қатесі");
 
