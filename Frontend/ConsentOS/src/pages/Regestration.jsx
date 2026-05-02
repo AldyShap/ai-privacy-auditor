@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Regestration.css';
-import { API_URL } from '../services/config.js';
-
+import { API_URL } from '../services/config.js'; // Мұнда http://127.0.0.1:8000 болуы тиіс
 
 const RegistrationPage = () => {
   const [username, setUsername] = useState("");
@@ -10,6 +9,7 @@ const RegistrationPage = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  // 1. Форма арқылы нақты тіркелу
   async function handleSubmit(e) {
     e.preventDefault();
 
@@ -17,38 +17,27 @@ const RegistrationPage = () => {
       const response = await fetch(`${API_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password })
+        body: JSON.stringify({ 
+          username: username, 
+          email: email, 
+          password: password 
+        })
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        alert("Тіркелу сәтті аяқталды!");
-        navigate("/login"); // Логин бетіне жіберу
+        alert("Тіркелу сәтті аяқталды! Енді логин арқылы кіріңіз.");
+        navigate("/login"); 
       } else {
+        // Бэкендтен келетін қателік хабарламасын көрсету
         alert(data.detail || "Тіркелу кезінде қате шықты");
       }
     } catch (error) {
-      console.error(error);
-      alert("Сервермен байланыс жоқ");
+      console.error("Registration error:", error);
+      alert("Сервермен байланыс жоқ. Бэкенд қосулы екенін тексеріңіз.");
     }
   }
-
-  const handleFastRegister = (e) => {
-    if (e) e.preventDefault();
-    
-    // 1. Өзіңе керек деректерді қолмен жазамыз
-    const mockUser = {
-      username: "Aldiyar Akbar", 
-      email: "aldiyar@consent.os"
-    };
-    
-    localStorage.setItem("user", JSON.stringify(mockUser));
-    localStorage.setItem("token", "emergency_bypass_token");
-
-    // 2. Dashboard-қа бірден ұшамыз
-    navigate("/dashboard");
-  };
 
   return (
     <div className="container">
@@ -61,11 +50,22 @@ const RegistrationPage = () => {
           <h1 style={{ textAlign: "center", marginBottom: "0" }}>Аккаунт жасаңыз</h1>
           <p className="subtitle">Барлық рұқсаттарды бір жерден басқарыңыз</p>
           
-          {/* Google батырмасы енді функцияны шақырады */}
+          {/* 2. Нақты Google OAuth сілтемесі */}
           <a
             className="google-btn"
-            onClick={handleFastRegister}
-            style={{ backgroundColor: "white", padding: 0, margin: "10px 0", border: "none", borderRadius: 10, cursor: "pointer", display: "flex", justifyContent: "center", width: "100%", textDecoration: "none"}}
+            href={`${API_URL}/auth/login/google`} // Мок емес, тікелей бэкке сұраныс
+            style={{ 
+              backgroundColor: "white", 
+              padding: 0, 
+              margin: "10px 0", 
+              border: "none", 
+              borderRadius: 10, 
+              cursor: "pointer", 
+              display: "flex", 
+              justifyContent: "center", 
+              width: "100%", 
+              textDecoration: "none"
+            }}
           >
             <img src="/google_reg.png" style={{ width: 250, borderRadius: 20 }} alt="google" />
           </a>
@@ -108,6 +108,7 @@ const RegistrationPage = () => {
           </p>
         </div>
 
+        {/* Инфо секция өзгеріссіз қалады */}
         <div className="info-section">
           <div className="score-card" style={{ textAlign: "center" }}>
             <img src="/score.png" style={{ width: "100%", maxWidth: 350, borderRadius: 15 }} alt="score" />

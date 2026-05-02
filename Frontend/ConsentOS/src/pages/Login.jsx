@@ -3,24 +3,39 @@ import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const API_URL = "https://ai-privacy-auditor-1jse.vercel.app"; 
 
-  // БҰЛ — СЕНІҢ ҚҰТҚАРУШЫ ФУНКЦИЯҢ
-  const handleFastLogin = (e) => {
-    if (e) e.preventDefault();
-    
-    // 1. Өзіңе керек деректерді қолмен жазамыз
-    const mockUser = {
-      username: "Aldiyar Akbar", 
-      email: "aldiyar@consent.os"
-    };
-    
-    localStorage.setItem("user", JSON.stringify(mockUser));
-    localStorage.setItem("token", "emergency_bypass_token");
+  async function handleLogin(e) {
+    e.preventDefault();
+    try {
+      const response = await fetch(`${API_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
 
-    // 2. Dashboard-қа бірден ұшамыз
-    navigate("/dashboard");
-  };
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("token", data.access_token);
+        localStorage.setItem("user", JSON.stringify({
+          username: data.user,
+          email: email
+        }));
+
+        alert("Қош келдіңіз!");
+        navigate("/dashboard"); 
+      } else {
+        alert(data.detail || "Құпия сөз немесе Email қате");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Серверге қосылу мүмкін болмады. Бэкендті (Uvicorn) қосқаныңызға көз жеткізіңіз.");
+    }
+  }
 
   return (
     <div className="container">
@@ -30,26 +45,42 @@ const LoginPage = () => {
             <img src="/contendOs.png" alt="Logo" className="contendOs-logo" />
           </div>
 
-          <h1>Consent OS</h1>
-          <p className="subtitle">Жүйеге кіру (Demo Mode)</p>
+          <h1>Қош келдіңіз!</h1>
+          <p className="subtitle">Аккаунтыңызға кіріңіз</p>
 
-          {/* ОСЫ БАТЫРМА ЕНДІ 100% ЖҰМЫС ІСТЕЙДІ */}
-          <button className="google-btn" onClick={handleFastLogin} style={{ cursor: 'pointer' }}>
-            <img src="https://www.google.com/favicon.ico" alt="G" style={{ width: "18px", marginRight: "10px" }} />
-            Google арқылы кіру (Bypass)
-          </button>
+          <a className="google-btn" href={`${API_URL}/auth/login/google`}>
+       <img src="https://www.google.com/favicon.ico" alt="G" style={{ width: "18px", marginRight: "10px" }} />
+       Google арқылы кіру
+    </a>
 
           <div className="divider">немесе</div>
 
-          <form onSubmit={handleFastLogin}>
+          <form onSubmit={handleLogin}>
             <div className="input-group">
               <label>Email</label>
-              <input type="email" placeholder="admin@example.com" />
+              <input
+                type="email"
+                placeholder="email@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
+
             <div className="input-group">
-              <label>Құпия сөз</label>
-              <input type="password" placeholder="••••••••" />
+              <div className="label-row">
+                <label>Құпия сөз</label>
+                <a href="#" className="forgot-link">Ұмыттыңыз ба?</a>
+              </div>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
             </div>
+
             <button className="submit-btn" type="submit">Кіру</button>
           </form>
 
@@ -60,8 +91,8 @@ const LoginPage = () => {
 
         <div className="info-section welcome-back">
           <div className="welcome-content">
-            <h2>Қауіпсіздік — біздің мақсат</h2>
-            <p>Презентацияға дайындық режимі қосулы.</p>
+            <h2>Қауіпсіздік — біздің басты мақсатымыз</h2>
+            <p>Деректеріңізді бақылауда ұстаңыз және құпиялылықты сақтаңыз.</p>
           </div>
         </div>
       </div>
