@@ -36,7 +36,7 @@ import os
 import tempfile
 
 BASE_DIR = os.path.dirname(__file__)
-load_dotenv(os.path.join(BASE_DIR, ".env"))
+load_dotenv()
 
 
 # ---------------- APP ----------------
@@ -51,12 +51,23 @@ app.add_middleware(
     secret_key="supersecret123"
 )
 
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=[
+#         "http://localhost:5173", 
+#         "https://ai-privacy-auditor.vercel.app", # Сенің фронтың
+#         "https://ai-privacy-auditor.onrender.com" # Сенің бэкің
+#     ],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173", 
-        "https://ai-privacy-auditor.vercel.app", # Сенің фронтың
-        "https://ai-privacy-auditor.onrender.com" # Сенің бэкің
+        "http://127.0.0.1:5173"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -64,13 +75,6 @@ app.add_middleware(
 )
 
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
-
-app.add_middleware(
-    SessionMiddleware,
-    secret_key="supersecret123",
-    same_site="none",
-    https_only=True
-)
 
 
 
@@ -177,8 +181,8 @@ class LoginData(BaseModel):
 
 # ---------------- GOOGLE OAUTH ----------------
 
-GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
-GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID2")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET2")
 
 print(f"ID: {GOOGLE_CLIENT_ID}")
 print(f"Secret: {GOOGLE_CLIENT_SECRET}")
@@ -206,77 +210,179 @@ BACKEND_URL = os.getenv("BACKEND_URL", "https://ai-privacy-auditor-1jse.vercel.a
 print(BACKEND_URL)
 
 
+# @app.get("/auth/login/google")
+# async def google_login(request: Request):
+#     callback_uri = "https://ai-privacy-auditor-1jse.vercel.app/auth/google/callback"
+#     redirect_uri = request.url_for("google_callback")
+
+#     return await oauth.google.authorize_redirect(
+#         request,
+#         callback_uri
+#     )
 @app.get("/auth/login/google")
 async def google_login(request: Request):
-    redirect_uri = request.url_for("google_callback")
-
-    return await oauth.google.authorize_redirect(
-        request,
-        redirect_uri
-    )
+    # Маңызды: Ертеңгі көрсетілім үшін локальді сілтемені қалдыр
+    redirect_uri = f"{BACKEND_URL}/auth/google/callback"
+    return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
 @app.get("/auth/google/callback")
-async def google_callback(
-    request: Request,
-    db: Session = Depends(get_db)
-):
-    # Authlib-тегі "got multiple values for keyword argument 'redirect_uri'" қатесін 
-    # болдырмау үшін, кейбір жағдайда redirect_uri-ды алып тастаған жөн.
-    # Бірақ Vercel-де нақтылық үшін оны oauth баптауларында көрсеткен дұрыс.
-    
+async def google_callback(request: Request, db: Session = Depends(get_db)):
+    # Мұнда да локальді callback көрсетілуі тиіс
+    redirect_uri = f"{BACKEND_URL}/auth/google/callback"
     try:
-        # 1. Токенді алу (redirect_uri-ды алып тастадық, себебі ол бэкэндтегі баптауда бар болуы тиіс)
-        token = await oauth.google.authorize_access_token(request)
-        user_info = token.get("userinfo")
-        
-        if not user_info:
-            return {"error": "User info not found in token"}
-
-        email = user_info.get("email")
-        # Атын алу, егер жоқ болса email-дің басын алу
-        name = user_info.get("name", email.split("@")[0] if email else "User")
-
-        if not email:
-            detail = f"Email not found in userinfo: {user_info}"
-            print(detail)
-            return {
-                "error": "Email not found",
-                "detail": detail
-            }
-
-        # 2. Пайдаланушыны базадан іздеу немесе тіркеу
-        user = db.query(User).filter(User.email == email).first()
-
-        if not user:
-            user = User(
-                email=email,
-                username=name,
-                password_hash=None # Google-мен кіргенде пароль керек емес
-            )
-            db.add(user)
-            db.commit()
-            db.refresh(user)
-
-        # 3. Фронтендке бағыттау (LoginPage-ге деректерді жібереміз)
-        # Бұл жерде біз сенің нақты Vercel URL-іңді қолданамыз
-        target_frontend = "https://ai-privacy-auditor.vercel.app/login"
-        
-        frontend_url = (
-            f"{target_frontend}?"
-            f"email={quote(email)}&"
-            f"name={quote(name)}&"
-            f"auth=success"
-        )
-        
-        return RedirectResponse(url=frontend_url)
-
+        token = await oauth.google.authorize_access_token(request, redirect_url=redirect_uri)    
     except Exception as exc:
         detail = str(exc)
-        print("Google callback failed:", detail)
-        # Қате болса да фронтқа жібереміз, бірақ қате кодымен
-        error_url = f"https://ai-privacy-auditor.vercel.app/login?error={quote(detail)}"
-        return RedirectResponse(url=error_url)
+        print("Google callback authorize_access_token failed:", detail)
+        return {
+            "error": "Google authorize_access_token failed",
+            "detail": detail,
+            "frontend_url": FRONTEND_URL,
+            "backend_url": BACKEND_URL
+        }
+
+    if not token or "userinfo" not in token:
+        detail = f"Invalid token response: {token}"
+        print(detail)
+        return {
+            "error": "Invalid token response",
+            "detail": detail,
+            "frontend_url": FRONTEND_URL,
+            "backend_url": BACKEND_URL
+        }
+
+    user_info = token["userinfo"]
+    email = user_info.get("email")
+    name = user_info.get("name", email.split("@")[0] if email else None)
+
+    if not email:
+        detail = f"Email not found in userinfo: {user_info}"
+        print(detail)
+        return {
+            "error": "Email not found in userinfo",
+            "detail": detail,
+            "frontend_url": FRONTEND_URL,
+            "backend_url": BACKEND_URL
+        }
+
+    user = db.query(User).filter(
+        User.email == email
+    ).first()
+
+    if not user:
+        user = User(
+            email=email,
+            username=name,
+            password_hash=None
+        )
+        db.add(user)
+        db.commit()
+
+    if not FRONTEND_URL:
+        raise HTTPException(
+            status_code=500,
+            detail="FRONTEND_URL environment variable is not set on the backend. Set it to your frontend URL."
+        )
+
+    if FRONTEND_URL.rstrip('/') == BACKEND_URL.rstrip('/'):
+        raise HTTPException(
+            status_code=500,
+            detail="FRONTEND_URL is set to the backend URL. It must point to your frontend URL, not backend."
+        )
+
+    try:
+        frontend_url = f"{FRONTEND_URL}/auth/google/callback?email={quote(email)}&name={quote(name)}"
+        return RedirectResponse(url=frontend_url)
+    except Exception as exc:
+        detail = str(exc)
+        print("Google callback redirect failed:", detail)
+        return {
+            "error": "RedirectResponse failed",
+            "detail": detail,
+            "frontend_url": FRONTEND_URL,
+            "backend_url": BACKEND_URL
+        }
+# @app.get("/auth/google/callback")
+# async def google_callback(
+#     request: Request,
+#     db: Session = Depends(get_db)
+# ):
+#     callback_uri = "https://ai-privacy-auditor-1jse.vercel.app/auth/google/callback"    
+#     try:
+#         token = await oauth.google.authorize_access_token(request, redirect_url=callback_uri)
+#     except Exception as exc:
+#         detail = str(exc)
+#         print("Google callback authorize_access_token failed:", detail)
+#         return {
+#             "error": "Google authorize_access_token failed",
+#             "detail": detail,
+#             "frontend_url": FRONTEND_URL,
+#             "backend_url": BACKEND_URL
+#         }
+
+#     if not token or "userinfo" not in token:
+#         detail = f"Invalid token response: {token}"
+#         print(detail)
+#         return {
+#             "error": "Invalid token response",
+#             "detail": detail,
+#             "frontend_url": FRONTEND_URL,
+#             "backend_url": BACKEND_URL
+#         }
+
+#     user_info = token["userinfo"]
+#     email = user_info.get("email")
+#     name = user_info.get("name", email.split("@")[0] if email else None)
+
+#     if not email:
+#         detail = f"Email not found in userinfo: {user_info}"
+#         print(detail)
+#         return {
+#             "error": "Email not found in userinfo",
+#             "detail": detail,
+#             "frontend_url": FRONTEND_URL,
+#             "backend_url": BACKEND_URL
+#         }
+
+#     user = db.query(User).filter(
+#         User.email == email
+#     ).first()
+
+#     if not user:
+#         user = User(
+#             email=email,
+#             username=name,
+#             password_hash=None
+#         )
+#         db.add(user)
+#         db.commit()
+
+#     if not FRONTEND_URL:
+#         raise HTTPException(
+#             status_code=500,
+#             detail="FRONTEND_URL environment variable is not set on the backend. Set it to your frontend URL."
+#         )
+
+#     if FRONTEND_URL.rstrip('/') == BACKEND_URL.rstrip('/'):
+#         raise HTTPException(
+#             status_code=500,
+#             detail="FRONTEND_URL is set to the backend URL. It must point to your frontend URL, not backend."
+#         )
+
+#     try:
+#         frontend_url = f"{FRONTEND_URL.rstrip('/')}/auth/google/callback?email={quote(email)}&name={quote(name)}"
+#         return RedirectResponse(url=frontend_url, status_code=302)
+#     except Exception as exc:
+#         detail = str(exc)
+#         print("Google callback redirect failed:", detail)
+#         return {
+#             "error": "RedirectResponse failed",
+#             "detail": detail,
+#             "frontend_url": FRONTEND_URL,
+#             "backend_url": BACKEND_URL
+#         }
+
 
 # ---------------- REGISTER ----------------
 
