@@ -66,7 +66,7 @@ app.add_middleware(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://ai-privacy-auditor-1jse.vercel.app", # Нақты фронт сілтемесі
+        "https://ai-privacy-auditor.vercel.app", # Нақты фронт сілтемесі
         "http://localhost:5173" # Локальді тексеру үшін қалдыр
     ],
     allow_credentials=True,
