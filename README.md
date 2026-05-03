@@ -76,3 +76,4 @@ npm run dev
 VENOM Team — Инновациялық шешімдер мен киберқауіпсіздікті қолдайтын дарынды жастар командасы.
 
 - Note: Бұл жоба "Consent OS" концепциясының MVP нұсқасы ретінде әзірленген.
+- Lead Developer: Aldiyar (9th Grade Student, Robotics & Web Dev)

@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, Request, Query
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, EmailStr
 import httpx
-# from google_play_scraper import app as get_app_info
+
 from google_play_scraper import app as get_app_info, search
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
@@ -36,7 +36,7 @@ import os
 import tempfile
 
 BASE_DIR = os.path.dirname(__file__)
-load_dotenv()
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 
 # ---------------- APP ----------------
@@ -48,26 +48,16 @@ app = FastAPI(title="AI Privacy Auditor")
 
 app.add_middleware(
     SessionMiddleware,
-    secret_key="supersecret123"
+    secret_key="supersecret123", # .env-ге салған дұрыс
+    https_only=False,            # Локальді HTTP үшін міндетті түрде False
+    same_site="lax",             # Google-ден қайтқанда сессияны жоғалтпау үшін
+    session_cookie="session",
 )
-
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=[
-#         "http://localhost:5173", 
-#         "https://ai-privacy-auditor.vercel.app", # Сенің фронтың
-#         "https://ai-privacy-auditor.onrender.com" # Сенің бэкің
-#     ],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://ai-privacy-auditor.vercel.app", # Нақты фронт сілтемесі
-        "http://localhost:5173" # Локальді тексеру үшін қалдыр
+        "http://localhost:5173"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -181,12 +171,8 @@ class LoginData(BaseModel):
 
 # ---------------- GOOGLE OAUTH ----------------
 
-GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID2")
-GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET2")
-
-print(f"ID: {GOOGLE_CLIENT_ID}")
-print(f"Secret: {GOOGLE_CLIENT_SECRET}")
-
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 
 oauth = OAuth()
 
@@ -205,31 +191,24 @@ oauth.register(
     }
 )
 
-FRONTEND_URL = os.getenv("FRONTEND_URL", "https://ai-privacy-auditor.vercel.app")
-BACKEND_URL = os.getenv("BACKEND_URL", "https://ai-privacy-auditor-1jse.vercel.app")
-print(BACKEND_URL)
+FRONTEND_URL = os.getenv("FRONTEND_URL", "https://your-frontend-url")
+BACKEND_URL = os.getenv("BACKEND_URL", "https://your-backend-url")
 
-
-# @app.get("/auth/login/google")
-# async def google_login(request: Request):
-#     callback_uri = "https://ai-privacy-auditor-1jse.vercel.app/auth/google/callback"
-#     redirect_uri = request.url_for("google_callback")
-
-#     return await oauth.google.authorize_redirect(
-#         request,
-#         callback_uri
-#     )
 @app.get("/auth/login/google")
 async def google_login(request: Request):
-    # Маңызды: Ертеңгі көрсетілім үшін локальді сілтемені қалдыр
-    redirect_uri = f"{BACKEND_URL}/auth/google/callback"
-    return await oauth.google.authorize_redirect(request, redirect_uri)
+    redirect_uri = "https://your-backend-url/auth/google/callback"
+    return await oauth.google.authorize_redirect(
+        request,
+        redirect_uri
+    )
 
 
 @app.get("/auth/google/callback")
-async def google_callback(request: Request, db: Session = Depends(get_db)):
-    # Мұнда да локальді callback көрсетілуі тиіс
-    redirect_uri = f"{BACKEND_URL}/auth/google/callback"
+async def google_callback(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    redirect_uri = "http://your-backend-url/auth/google/callback"
     try:
         token = await oauth.google.authorize_access_token(request, redirect_url=redirect_uri)    
     except Exception as exc:
@@ -292,8 +271,8 @@ async def google_callback(request: Request, db: Session = Depends(get_db)):
         )
 
     try:
-        frontend_url = f"{FRONTEND_URL}/auth/google/callback?email={quote(email)}&name={quote(name)}"
-        return RedirectResponse(url=frontend_url)
+        frontend_url = f"{FRONTEND_URL.rstrip('/')}/auth/google/callback?email={quote(email)}&name={quote(name)}"
+        return RedirectResponse(url=frontend_url, status_code=302)
     except Exception as exc:
         detail = str(exc)
         print("Google callback redirect failed:", detail)
@@ -303,85 +282,6 @@ async def google_callback(request: Request, db: Session = Depends(get_db)):
             "frontend_url": FRONTEND_URL,
             "backend_url": BACKEND_URL
         }
-# @app.get("/auth/google/callback")
-# async def google_callback(
-#     request: Request,
-#     db: Session = Depends(get_db)
-# ):
-#     callback_uri = "https://ai-privacy-auditor-1jse.vercel.app/auth/google/callback"    
-#     try:
-#         token = await oauth.google.authorize_access_token(request, redirect_url=callback_uri)
-#     except Exception as exc:
-#         detail = str(exc)
-#         print("Google callback authorize_access_token failed:", detail)
-#         return {
-#             "error": "Google authorize_access_token failed",
-#             "detail": detail,
-#             "frontend_url": FRONTEND_URL,
-#             "backend_url": BACKEND_URL
-#         }
-
-#     if not token or "userinfo" not in token:
-#         detail = f"Invalid token response: {token}"
-#         print(detail)
-#         return {
-#             "error": "Invalid token response",
-#             "detail": detail,
-#             "frontend_url": FRONTEND_URL,
-#             "backend_url": BACKEND_URL
-#         }
-
-#     user_info = token["userinfo"]
-#     email = user_info.get("email")
-#     name = user_info.get("name", email.split("@")[0] if email else None)
-
-#     if not email:
-#         detail = f"Email not found in userinfo: {user_info}"
-#         print(detail)
-#         return {
-#             "error": "Email not found in userinfo",
-#             "detail": detail,
-#             "frontend_url": FRONTEND_URL,
-#             "backend_url": BACKEND_URL
-#         }
-
-#     user = db.query(User).filter(
-#         User.email == email
-#     ).first()
-
-#     if not user:
-#         user = User(
-#             email=email,
-#             username=name,
-#             password_hash=None
-#         )
-#         db.add(user)
-#         db.commit()
-
-#     if not FRONTEND_URL:
-#         raise HTTPException(
-#             status_code=500,
-#             detail="FRONTEND_URL environment variable is not set on the backend. Set it to your frontend URL."
-#         )
-
-#     if FRONTEND_URL.rstrip('/') == BACKEND_URL.rstrip('/'):
-#         raise HTTPException(
-#             status_code=500,
-#             detail="FRONTEND_URL is set to the backend URL. It must point to your frontend URL, not backend."
-#         )
-
-#     try:
-#         frontend_url = f"{FRONTEND_URL.rstrip('/')}/auth/google/callback?email={quote(email)}&name={quote(name)}"
-#         return RedirectResponse(url=frontend_url, status_code=302)
-#     except Exception as exc:
-#         detail = str(exc)
-#         print("Google callback redirect failed:", detail)
-#         return {
-#             "error": "RedirectResponse failed",
-#             "detail": detail,
-#             "frontend_url": FRONTEND_URL,
-#             "backend_url": BACKEND_URL
-#         }
 
 
 # ---------------- REGISTER ----------------
@@ -519,43 +419,6 @@ async def analyze_privacy(data: AnalysisRequest):
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
-# @app.get("/api/analyze-app/{app_id}")
-# async def analyze_real_app(app_id: str):
-#     try:
-#         # 1. Получаем данные из Google Play (например, 'com.instagram.android')
-#         info = get_app_info(app_id, lang='en', country='us')
-        
-#         app_name = info['title']
-#         # Вытягиваем краткое описание или жанр для анализа
-#         summary = info['summary'] or info['description'][:200]
-        
-#         # 2. Формируем промпт для Gemini
-#         prompt = (
-#             f"Act as a privacy expert. Analyze the app '{app_name}'. "
-#             f"Context: {summary}. "
-#             f"Based on its category and typical behavior, explain 3 main privacy risks "
-#             f"in one short sentence each. Give a final safety score from 1 to 100."
-#         )
-
-#         # 3. Запрос к Gemini (используй свой существующий код с GEMINI_API_KEY)
-#         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
-#         payload = {"contents": [{"parts": [{"text": prompt}]}]}
-        
-#         async with httpx.AsyncClient() as client:
-#             resp = await client.post(url, json=payload)
-#             ai_data = resp.json()
-#             explanation = ai_data['candidates'][0]['content']['parts'][0]['text']
-
-#         return {
-#             "title": app_name,
-#             "icon": info['icon'],
-#             "score": info.get('score', 70), # или выпарси число из ответа AI
-#             "ai_analysis": explanation
-#         }
-#     except Exception as e:
-#         raise HTTPException(status_code=404, detail=f"App not found or error: {str(e)}")
-
-
 @app.get("/api/analyze-app")
 async def analyze_real_app(name: str):
     if not GROQ_API_KEY:
@@ -665,3 +528,40 @@ async def analyze_real_app(question: str):
             
         except Exception as e:
             return {"error": str(e)}
+        
+# ------------------------------------------------- NOTES ----------------------------------------------------------------
+# @app.get("/api/analyze-app/{app_id}")
+# async def analyze_real_app(app_id: str):
+#     try:
+#         # 1. Получаем данные из Google Play (например, 'com.instagram.android')
+#         info = get_app_info(app_id, lang='en', country='us')
+        
+#         app_name = info['title']
+#         # Вытягиваем краткое описание или жанр для анализа
+#         summary = info['summary'] or info['description'][:200]
+        
+#         # 2. Формируем промпт для Gemini
+#         prompt = (
+#             f"Act as a privacy expert. Analyze the app '{app_name}'. "
+#             f"Context: {summary}. "
+#             f"Based on its category and typical behavior, explain 3 main privacy risks "
+#             f"in one short sentence each. Give a final safety score from 1 to 100."
+#         )
+
+#         # 3. Запрос к Gemini (используй свой существующий код с GEMINI_API_KEY)
+#         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+#         payload = {"contents": [{"parts": [{"text": prompt}]}]}
+        
+#         async with httpx.AsyncClient() as client:
+#             resp = await client.post(url, json=payload)
+#             ai_data = resp.json()
+#             explanation = ai_data['candidates'][0]['content']['parts'][0]['text']
+
+#         return {
+#             "title": app_name,
+#             "icon": info['icon'],
+#             "score": info.get('score', 70), # или выпарси число из ответа AI
+#             "ai_analysis": explanation
+#         }
+#     except Exception as e:
+#         raise HTTPException(status_code=404, detail=f"App not found or error: {str(e)}")

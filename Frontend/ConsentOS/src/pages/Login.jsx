@@ -6,8 +6,9 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const API_URL = "https://ai-privacy-auditor-1jse.vercel.app"; 
 
+  // Мына жерді ауыстыр: VITE_API_URL-ды елемей, бірден localhost-қа бағыттау
+  const API_URL = "http://localhost:8000";
   async function handleLogin(e) {
     e.preventDefault();
     try {
@@ -49,9 +50,9 @@ const LoginPage = () => {
           <p className="subtitle">Аккаунтыңызға кіріңіз</p>
 
           <a className="google-btn" href={`${API_URL}/auth/login/google`}>
-       <img src="https://www.google.com/favicon.ico" alt="G" style={{ width: "18px", marginRight: "10px" }} />
-       Google арқылы кіру
-    </a>
+            <img src="https://www.google.com/favicon.ico" alt="G" style={{ width: "18px", marginRight: "10px" }} />
+            Google арқылы кіру
+          </a>
 
           <div className="divider">немесе</div>
 
