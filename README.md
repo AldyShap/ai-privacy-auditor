@@ -1,79 +1,223 @@
-# 🔐 AI-Privacy Auditor (Consent OS)
+# AI Privacy Auditor — Consent OS
+
+> “Take back control of your digital privacy.”
+
+AI-powered privacy management platform that helps users understand, analyze, and control connected services, permissions, and privacy risks in one dashboard.
 
 ---
 
-### 🌐 Overview
-**AI-Privacy Auditor** — бұл пайдаланушыларға өздерінің дербес деректеріне қолжетімділікті көруге, түсінуге және бақылауға көмектесетін интеллектуалды цифрлық келісімдерді басқару жүйесі (**Consent OS**).
+## 🚀 Overview
 
-> **Vision:** Әрбір пайдаланушы қандай деректі, кімге және не үшін беріп жатқанын білуі тиіс. Бұл жоба сол бақылауды өз қолыңызға береді.
+**AI Privacy Auditor (Consent OS)** is a fullstack web platform focused on digital privacy and permission management.
 
----
+The platform allows users to:
+- connect services securely
+- analyze privacy risks using AI
+- monitor connected accounts
+- simulate permission impact
+- revoke dangerous access instantly
 
-## 🚀 Мәселе (Problem)
-Бүгінгі таңда пайдаланушылар:
-*   **Түсінбейді:** Қандай деректерді үшінші тарапқа беріп жатқаны беймәлім.
-*   **Оқымайды:** 80% пайдаланушы келісімшарттарды автоматты түрде қабылдайды.
-*   **Басқара алмайды:** Қолжетімділікті тез арада қайтарып алу тетіктері күрделі.
-
----
-
-## 💡 Шешім (Solution)
-**AI-Privacy Auditor** "See → Understand → Control" моделін ұсынады:
-1.  **Visibility (Көру):** Барлық қосылған сервистер мен олардың рұқсаттарын бір жерден көру.
-2.  **Understanding (Түсіну):** ЖИ (AI) қауіптерді қарапайым тілмен түсіндіріп, баға береді.
-3.  **Control (Бақылау):** Қауіпті сервистерді бір басу арқылы өшіру (симуляция).
+Built during a hackathon and later transformed into a fully working MVP.
 
 ---
 
-## 🧩 Мүмкіндіктер (Features)
-*   📊 **Privacy Score (0–100):** Құпиялылықтың жалпы деңгейін есептейтін рейтинг.
-*   ⚠️ **Risk Analysis:** Тәуекелдерді санаттау (HIGH / LOW).
-*   🤖 **AI Explain (Llama-3/DeepSeek):** Жарвис көмекшісінің қазақ тіліндегі нақты талдауы.
-*   🔮 **Simulation:** Жаңа қолданбаны қосқанда қауіпсіздік деңгейінің қалай өзгеретінін болжау.
-*   🔐 **Secure Auth:** Google OAuth арқылы қауіпсіз кіру.
+## ✨ Features
+
+### 🔐 Authentication System
+- Email/password authentication
+- Google OAuth 2.0 integration
+- Secure session handling
+- Password hashing with bcrypt
+
+### 📊 Privacy Dashboard
+- Connected services overview
+- Privacy score system (0–100)
+- Risk indicators (LOW / HIGH)
+- Real-time permission management
+
+### 🤖 AI Privacy Analysis
+- AI-generated explanations of permissions
+- Risk analysis for connected services
+- Human-readable privacy insights
+- Smart recommendations
+
+### ⚡ Simulation Engine
+Simulate application installation before connecting it:
+- analyze permissions
+- estimate privacy impact
+- preview security risks
+- AI-powered scoring
+
+### 🚫 Revoke Access
+One-click revoke system:
+- remove connected services
+- update dashboard instantly
+- sync with backend database
 
 ---
 
-## 🏗️ Техникалық стек (Tech Stack)
+## 🛠️ Tech Stack
 
-| Бөлім | Технологиялар |d
-| :--- | :--- |
-| **Frontend** | React, Vite, JavaScript, CSS3 |
-| **Backend** | FastAPI (Python), SQLAlchemy |
-| **Database** | SQLite (MVP кезеңі үшін) |
-| **AI Engine** | Groq API (DeepSeek-V3 & Llama-3.3) |
-| **Auth** | Google OAuth 2.0 |
+### Frontend
+- React
+- React Router
+- JavaScript
+- CSS
+
+### Backend
+- FastAPI
+- Python
+- REST API
+
+### Database
+- SQLite
+
+### Authentication
+- Google OAuth 2.0
+- bcrypt
+
+### AI Integration
+- OpenAI API
+- Groq API
+
+### Deployment
+- Vercel
 
 ---
 
-## 🛠️ Орнату және іске қосу (Setup)
+## 🧠 Architecture
 
-### 1. Backend-ті баптау
+```text
+Frontend (React)
+       ↓
+REST API (FastAPI)
+       ↓
+Database (SQLite)
+       ↓
+AI Analysis Layer
+```
+
+The application follows a SPA (Single Page Application) architecture using React Router for seamless navigation.
+
+---
+
+## 📂 Core Functionalities
+
+| Feature | Description |
+|---|---|
+| Dashboard | Monitor connected services |
+| AI Explain | Explain permissions in simple language |
+| Privacy Score | Evaluate privacy protection level |
+| Simulation | Predict app privacy impact |
+| Revoke | Instantly remove permissions |
+
+---
+
+## 🔥 Challenges Faced
+
+This project involved solving real-world engineering problems:
+
+- OAuth callback routing
+- Frontend/backend deployment issues
+- CORS configuration
+- Environment variable security
+- API integration
+- Database synchronization
+- GitHub secret scanning protection
+
+---
+
+## 📸 Screenshots
+
+_Add screenshots here_
+
+```md
+![Dashboard](./screenshots/dashboard.png)
+![Simulation](./screenshots/simulation.png)
+```
+
+---
+
+## ⚙️ Installation
+
+### Clone repository
+
+```bash
+git clone https://github.com/AldyShap/ai-privacy-auditor.git
+```
+
+---
+
+### Backend setup
+
 ```bash
 cd Backend
-# Виртуалды орта құру
-python -m venv venv
-source venv/bin/activate # Windows үшін: venv\Scripts\activate
-# Кітапханаларды орнату
 pip install -r requirements.txt
-# Серверді қосу
-uvicorn main:app --reload
 ```
-### 2. Frontend-ті баптау
-```Bash
+
+Create `.env`
+
+```env
+GOOGLE_CLIENT_ID=your_client_id
+GOOGLE_CLIENT_SECRET=your_secret
+OPENAI_API_KEY=your_key
+GROQ_API_KEY=your_key
+```
+
+Run backend:
+
+```bash
+uvicorn app.main:app --reload
+```
+
+---
+
+### Frontend setup
+
+```bash
 cd Frontend/ConsentOS
-# Модульдерді орнату
 npm install
-# Жобаны іске қосу
 npm run dev
 ```
-### 💰 Қаржылық модель (Business Model)
-- B2C (Freemium): Шектеулі талдау тегін, толық ЖИ-сараптама айына $4.99.
 
-- B2B (Enterprise): Банктер мен финтех компаниялар үшін аудит және compliance шешімдері ($500 - $2000/мес).
+---
 
-### 👥 Команда
-VENOM Team — Инновациялық шешімдер мен киберқауіпсіздікті қолдайтын дарынды жастар командасы.
+## 🌍 Vision
 
-- Note: Бұл жоба "Consent OS" концепциясының MVP нұсқасы ретінде әзірленген.
-- Lead Developer: Aldiyar (9th Grade Student, Robotics & Fullstack Dev)
+Consent OS aims to become a centralized privacy management ecosystem where users can fully understand and control how their personal data is used online.
+
+The long-term vision includes:
+- enterprise integrations
+- e-government privacy tools
+- advanced AI monitoring
+- PostgreSQL migration
+- 2FA support
+- real revoke token management
+
+---
+
+## 👨‍💻 Team Venom
+
+Built with passion during Hackathon 2026.
+
+---
+
+## 📌 Project Status
+
+✅ MVP Completed  
+✅ OAuth Working  
+✅ Dashboard Working  
+✅ AI Simulation Implemented  
+✅ Service Revoke System Working
+
+---
+
+## 📜 License
+
+MIT License
+
+---
+
+## ⭐ Support
+
+If you like the project, consider giving it a star on GitHub ⭐
