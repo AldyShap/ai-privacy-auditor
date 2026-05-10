@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import "./Settings.css";
+import { useNavigate } from 'react-router-dom';
+
 
 const Settings = () => {
     // Свитчтердің күйін сақтау үшін
@@ -9,8 +11,15 @@ const Settings = () => {
         autoScan: true
     });
 
+    const navigate = useNavigate();
+
     const toggleSetting = (key) => {
         setSettings(prev => ({ ...prev, [key]: !prev[key] }));
+    };
+
+    const handleLogout = () => {
+        localStorage.clear();
+        navigate("/login");
     };
 
     return (
@@ -73,7 +82,9 @@ const Settings = () => {
                     <p><strong>Имя:</strong> Venom</p>
                     <p><strong>Почта:</strong> venom.albol.8@gmail.com</p>
                 </div>
-                <button className="logout-btn">Log out</button>
+                <button onClick={handleLogout} className="logout-link" style={{backgroundColor: "#1557b0", color: "white", padding: 5, border: "none", borderRadius: 5, fontSize: 15, fontFamily: "sans-serif"}}>
+                                        Шығу
+                </button>
             </div>
         </div>
     );

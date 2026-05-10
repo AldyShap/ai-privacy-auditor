@@ -8,7 +8,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   // Мына жерді ауыстыр: VITE_API_URL-ды елемей, бірден localhost-қа бағыттау
-  const API_URL = "http://localhost:8000";
+  const API_URL = "http://127.0.0.1:8000";
   async function handleLogin(e) {
     e.preventDefault();
     try {
@@ -19,6 +19,7 @@ const LoginPage = () => {
       });
 
       const data = await response.json();
+
 
       if (response.ok) {
         localStorage.setItem("token", data.access_token);

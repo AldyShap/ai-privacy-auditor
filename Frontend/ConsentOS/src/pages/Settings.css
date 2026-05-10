@@ -101,6 +101,11 @@ input:checked + .slider:before {
     transition: 0.3s;
 }
 
-.logout-btn:hover {
-    background-color: #1557b0;
+.logout-link {
+    transition: 0.3s ease;
+
+}
+
+.logout-link:hover {
+    transform:scale(1.15);
 }

@@ -5,6 +5,7 @@
   import { getAIExplanation } from '../services/aiService.js';
   import { API_URL } from '../services/config.js';
   import "./Simulation.css";
+import {ToastContainer, toast} from 'react-toastify';
 
   const APPS_DATA = [
     { id: 1, name: "New Social App", risk: "high", impact: -15, icon: "📱" },
@@ -155,8 +156,46 @@
       });
     }
 
+    const handleSetAnalzedApp = async () => {
+      const savedUser = localStorage.getItem("user");
+      if (!savedUser) {
+        toast.error("Пайдаланушы табылмады");
+        return;
+      }
+
+      const userObj = JSON.parse(savedUser);
+      const username = userObj.username;
+      
+      // setLoading(true); // Егер жүктелу күйін көрсеткің келсе
+
+      try {
+        // foundAppData.title — бұл ИИ талдаған сервистің нақты аты
+        const response = await fetch(
+          `http://127.0.0.1:8000/set-analyzed-app?service_name=${encodeURIComponent(foundAppData.title)}&username=${encodeURIComponent(username)}`, 
+          { method: "POST" }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          toast.error(data.detail || "Қате орын алды");
+          return;
+        }
+
+        const message = data.message;
+        toast.success(message);
+        setIsModalOpen(false); // Орнатқаннан кейін модалканы жабамыз
+
+      } catch (error) {
+        toast.error(`Бэкенд қатесі: ${error.message}`);
+      } finally {
+        // setLoading(false);
+      }
+    };
+
     return (
       <div className="simulation-overlay">
+        <ToastContainer/>
         <div className="simulation-modal">
           <br></br>
           <br></br>
@@ -271,7 +310,7 @@
         </div>
 
         <div className="popup-actions">
-          <button className="btn-install" onClick={() => alert("Орнату басталды...")}>Орнату</button>
+          <button className="btn-install" onClick={handleSetAnalzedApp}>Орнату</button>
           <button className="btn-cancel" onClick={() => setIsModalOpen(false)}>Жабу</button>
         </div>
       </div>

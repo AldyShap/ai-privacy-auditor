@@ -36,7 +36,7 @@
 
 ## 🏗️ Техникалық стек (Tech Stack)
 
-| Бөлім | Технологиялар |
+| Бөлім | Технологиялар |d
 | :--- | :--- |
 | **Frontend** | React, Vite, JavaScript, CSS3 |
 | **Backend** | FastAPI (Python), SQLAlchemy |

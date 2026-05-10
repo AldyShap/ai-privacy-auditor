@@ -2,6 +2,11 @@ from fastapi import FastAPI, Depends, HTTPException, Request, Query
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, EmailStr
 import httpx
+import json
+
+from datetime import datetime, timezone # This allows using datetime.now()
+from sqlalchemy import JSON, ForeignKey, Column, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column
 
 from google_play_scraper import app as get_app_info, search
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
@@ -13,15 +18,25 @@ from sqlalchemy import (
     create_engine,
     Column,
     Integer,
-    String
+    String,
+    ForeignKey,
+    func,
+    JSON,
+    select,
+    delete,
+    and_
 )
 
+from sqlalchemy.orm import DeclarativeBase
 
 from sqlalchemy.orm import (
-    declarative_base,
     sessionmaker,
-    Session
+    Session,
+    Mapped, 
+    mapped_column
 )
+
+import enum
 
 from passlib.context import CryptContext
 
@@ -98,29 +113,48 @@ SessionLocal = sessionmaker(
     autoflush=False
 )
 
-Base = declarative_base()
-
+class Base(DeclarativeBase):
+    pass
 
 class User(Base):
     __tablename__ = "users"
+    # id must have the : Mapped[int] type hint
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(unique=True)
+    username: Mapped[str] = mapped_column(nullable=True)
+    password_hash: Mapped[str] = mapped_column(nullable=True)
 
-    id = Column(
-        Integer,
-        primary_key=True
+class Risk(enum.Enum):
+    low = "LOW"
+    medium = "MEDIUM"
+    high = "HIGH"
+
+class Color(enum.Enum):
+    low = "#10b981"
+    medium = "#f59e0b"
+    high = "#ef4444"
+
+# 3. Updated ConnectedService Model
+class ConnectedService(Base):
+    __tablename__ = "connected_services"
+    
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    name: Mapped[str] = mapped_column()
+    
+    color: Mapped[Color] = mapped_column()
+    category: Mapped[str] = mapped_column()
+    risk: Mapped[Risk] = mapped_column()
+    img_src: Mapped[str] = mapped_column()
+    
+    # datetime.datetime емес, жай ғана datetime деп жаз (өйткені жоғарыда солай импортталды)
+    lastAccess: Mapped[datetime] = mapped_column(
+        default=lambda: datetime.now(timezone.utc)
     )
 
-    email = Column(
-        String,
-        unique=True
-    )
-
-    username = Column(String)
-
-    password_hash = Column(String)
-
+    data: Mapped[list[str]] = mapped_column(JSON)
 
 Base.metadata.create_all(bind=engine)
-
 
 def get_db():
     db = SessionLocal()
@@ -168,11 +202,23 @@ class LoginData(BaseModel):
     email: EmailStr
     password: str
 
+class ConnectedServiceSchema(BaseModel):
+    name: str
+    category: str
+    risk: Risk
+    color: Color
+    img_src: str
+    data: list[str]
+
+
+
 
 # ---------------- GOOGLE OAUTH ----------------
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+
+# print("Google Client ID: ", GOOGLE_CLIENT_ID)
 
 oauth = OAuth()
 
@@ -191,12 +237,12 @@ oauth.register(
     }
 )
 
-FRONTEND_URL = os.getenv("FRONTEND_URL", "https://your-frontend-url")
-BACKEND_URL = os.getenv("BACKEND_URL", "https://your-backend-url")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
 
 @app.get("/auth/login/google")
 async def google_login(request: Request):
-    redirect_uri = "https://your-backend-url/auth/google/callback"
+    redirect_uri = "http://127.0.0.1:8000/auth/google/callback"
     return await oauth.google.authorize_redirect(
         request,
         redirect_uri
@@ -208,7 +254,7 @@ async def google_callback(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    redirect_uri = "http://your-backend-url/auth/google/callback"
+    redirect_uri = "http://127.0.0.1:8000/auth/google/callback"
     try:
         token = await oauth.google.authorize_access_token(request, redirect_url=redirect_uri)    
     except Exception as exc:
@@ -528,40 +574,179 @@ async def analyze_real_app(question: str):
             
         except Exception as e:
             return {"error": str(e)}
-        
-# ------------------------------------------------- NOTES ----------------------------------------------------------------
-# @app.get("/api/analyze-app/{app_id}")
-# async def analyze_real_app(app_id: str):
-#     try:
-#         # 1. Получаем данные из Google Play (например, 'com.instagram.android')
-#         info = get_app_info(app_id, lang='en', country='us')
-        
-#         app_name = info['title']
-#         # Вытягиваем краткое описание или жанр для анализа
-#         summary = info['summary'] or info['description'][:200]
-        
-#         # 2. Формируем промпт для Gemini
-#         prompt = (
-#             f"Act as a privacy expert. Analyze the app '{app_name}'. "
-#             f"Context: {summary}. "
-#             f"Based on its category and typical behavior, explain 3 main privacy risks "
-#             f"in one short sentence each. Give a final safety score from 1 to 100."
-#         )
+ 
 
-#         # 3. Запрос к Gemini (используй свой существующий код с GEMINI_API_KEY)
-#         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
-#         payload = {"contents": [{"parts": [{"text": prompt}]}]}
-        
-#         async with httpx.AsyncClient() as client:
-#             resp = await client.post(url, json=payload)
-#             ai_data = resp.json()
-#             explanation = ai_data['candidates'][0]['content']['parts'][0]['text']
+@app.post("/set-services")
+def set_mock_services(
+    services: list[ConnectedServiceSchema],
+    username: str,
+    db: Session = Depends(get_db)
+):
+    user_query = select(User).where(User.username == username)
 
-#         return {
-#             "title": app_name,
-#             "icon": info['icon'],
-#             "score": info.get('score', 70), # или выпарси число из ответа AI
-#             "ai_analysis": explanation
-#         }
-#     except Exception as e:
-#         raise HTTPException(status_code=404, detail=f"App not found or error: {str(e)}")
+    result = db.execute(user_query).scalar()
+
+    if not result:
+        raise HTTPException(
+            status_code=404,
+            detail="The user not found in Database"
+        )
+    print(result.id)
+
+    for service in services:
+        # Create the model instance
+        # Ensure we are only passing data that the DB model expects
+        new_service = ConnectedService(
+            **service.model_dump(exclude={"lastAccess"}), # Explicitly exclude the date if it's in the schema
+            user_id=result.id
+        )
+        db.add(new_service)
+    
+    db.commit()
+    return {"message": "OKAY"}
+
+@app.get("/services")
+async def get_services_of_user(
+    username: str,
+    db: Session = Depends(get_db)
+):
+    # 1. Пайдаланушыны табу
+    user_query = select(User).where(User.username == username)
+    user = db.execute(user_query).scalar_one_or_none()
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="The user not found in Database"
+        )
+
+    # 2. Тек осы пайдаланушыға тиісті сервистерді алу
+    # .join() бұл жерде міндетті емес, өйткені бізде user.id бар
+    services_query = select(ConnectedService).where(ConnectedService.user_id == user.id)
+    
+    result = db.execute(services_query)
+    services_res = result.scalars().all()
+
+    # 3. Нәтижені қайтару
+    return {
+        "success": True,
+        "services": services_res  # Егер Pydantic қолдансаң, автоматты түрде өтеді
+    }
+
+@app.delete("/delete-service")
+def delete_the_service(
+    username: str,
+    service_id: int,
+    db: Session = Depends(get_db)
+):
+    user_query = select(User).where(User.username == username)
+
+    result = db.execute(user_query).scalar()
+
+    if not result:
+        raise HTTPException(
+            status_code=404,
+            detail="Service not found or doesn't belong to this user"
+        )
+    
+    user_id = result.id
+    
+    service_delete = (
+        delete(ConnectedService)
+        .where(
+            and_(
+                ConnectedService.id == service_id,
+                ConnectedService.user_id == user_id)
+        )
+    )
+
+    result = db.execute(service_delete)
+
+    if result.rowcount == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="Service not found or doesn't belong to this user"
+        )
+
+    db.commit()
+
+    return {
+        "status": "success",
+        "message": f"Service {service_id} deleted successfully"
+    }
+
+
+@app.post("/set-analyzed-app")
+async def set_analyzed_app_ai(
+    service_name: str,
+    username: str, # Қай пайдаланушыға қосатынымызды білу үшін
+    db: Session = Depends(get_db)
+):
+    if not GROQ_API_KEY:
+        raise HTTPException(status_code=500, detail="API Key not configured")
+
+    # 1. Пайдаланушыны базадан табу
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # 2. ИИ-ге арналған нұсқаулық (System Prompt)
+    # Біз ИИ-ден ТЕК JSON қайтаруды талап етеміз
+    instruction = (
+        "Сен Privacy Auditor-сың. Берілген қолданбаны талдап, ТЕК қана келесі құрылымдағы JSON қайтар: "
+        '{"name": "...", "category": "Education/Goverment/Daily Apps/Social Media/Finance/т.б", "risk": "high/medium/low", "color": "low/medium/high",'
+        '"img_src": "URL/Path", "data": ["item1", "item2", "Geolocation", "Contacts", "Т.б"]}. '
+        "Ешқандай артық мәтін жазба, тек JSON."
+    )
+
+    payload = {
+        "model": "llama-3.3-70b-versatile",
+        "messages": [
+            {"role": "system", "content": instruction},
+            {"role": "user", "content": f"Analyze this app: {service_name}"}
+        ],
+        "response_format": {"type": "json_object"} # Модельге JSON қайтаруды бұйырамыз
+    }
+
+    headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
+
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.post("https://api.groq.com/openai/v1/chat/completions", 
+                                       json=payload, headers=headers, timeout=30.0)
+            
+            if response.status_code != 200:
+                raise HTTPException(status_code=500, detail="AI Service unavailable")
+
+            ai_data = response.json()['choices'][0]['message']['content']
+            app_info = json.loads(ai_data) # Стрингті Python dict-ке айналдыру
+
+            existing_service = db.query(ConnectedService).filter(
+                ConnectedService.name == app_info['name'],
+                ConnectedService.user_id == user.id
+            ).first()
+
+            if existing_service:
+                return {"message": "Бұл сервис сізде қосылған!", "added_app": app_info}
+
+            # 3. Базаға сақтау
+            new_service = ConnectedService(
+                user_id=user.id,
+                name=app_info['name'],
+                color=app_info['color'],
+                category=app_info['category'],
+                risk=app_info['risk'],
+                img_src=app_info.get('img_src', '/default.png'),
+                data=app_info.get("data", ["No data"])
+                # 'data' бағаны сенде JSON болса, оны тікелей салуға болады
+            )
+            
+            db.add(new_service)
+            db.commit()
+            db.refresh(new_service)
+
+            return {"message": "Сервис сәтті орнатылды", "added_app": app_info}
+
+        except Exception as e:
+            db.rollback()
+            raise HTTPException(status_code=400, detail=f"Error analyzing app: {str(e)}")
