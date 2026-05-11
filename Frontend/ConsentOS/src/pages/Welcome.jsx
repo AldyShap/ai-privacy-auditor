@@ -65,7 +65,7 @@ const Welcome = () => {
             <footer className="welcome-footer">
                 <div className="footer-content">
                     <div className="footer-brand">
-                        <img src={"src/assets/contendOs.png"} alt="ContendOSLogo" style={{width: 150, height: 50}}/>
+                        <img src={"./contendOs.png"} alt="ContendOSLogo" style={{width: 180, height: 50}}/>
                         <p>Твой личный щит в мире цифровых данных.</p>
                     </div>
                     <div className="footer-contacts">
