@@ -132,8 +132,12 @@ This project involved solving real-world engineering problems:
 _Add screenshots here_
 
 ```md
-![Dashboard](./screenshots/dashboard.png)
-![Simulation](./screenshots/simulation.png)
+<p align="center">
+  <img src="./screenshots/dashboard.png" width="800"/>
+</p>
+<p align="center">
+  <img src="./screenshots/simulation.png" width="800"/>
+</p>
 ```
 
 ---
