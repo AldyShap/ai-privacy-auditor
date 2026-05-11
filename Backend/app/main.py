@@ -218,7 +218,7 @@ class ConnectedServiceSchema(BaseModel):
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 
-# print("Google Client ID: ", GOOGLE_CLIENT_ID)
+print("Google Client ID: ", GOOGLE_CLIENT_ID)
 
 oauth = OAuth()
 
