@@ -129,12 +129,13 @@ This project involved solving real-world engineering problems:
 
 ## 📸 Screenshots
 
-_Add screenshots here_
+_📸 Dashboard&Simulation screenshots Preview_
 
 ```md
 <p align="center">
   <img src="./screenshots/dashboard.png" width="800"/>
 </p>
+
 <p align="center">
   <img src="./screenshots/simulation.png" width="800"/>
 </p>
